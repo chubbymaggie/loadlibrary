@@ -20,7 +20,7 @@ ndiswrapper. The library will process the relocations and imports, then provide
 a `dlopen`-like API. The code supports debugging with gdb (including symbols),
 basic block coverage collection, and runtime hooking and patching.
 
-![Is such a thing even possible?](https://media.giphy.com/media/LwAjTGdSWNRYc/giphy.gif)
+![Is such a thing even possible?](https://media.giphy.com/media/2pDSW8QQU6jRe/giphy.gif)
 
 ### What works?
 
@@ -28,11 +28,11 @@ The intention is to allow scalable and efficient fuzzing of self-contained
 Windows libraries on Linux. Good candidates might be video codecs,
 decompression libraries, virus scanners, image decoders, and so on.
 
-    * C++ exception dispatch and unwinding.
-    * Loading additional symbols from IDA.
-    * Debugging with gdb (including symbols), breakpoints, stack traces, etc.
-    * Runtime hooking and patching.
-    * Support for ASAN and Valgrind to detect subtle memory corruption bugs.
+* C++ exception dispatch and unwinding.
+* Loading additional symbols from IDA.
+* Debugging with gdb (including symbols), breakpoints, stack traces, etc.
+* Runtime hooking and patching.
+* Support for ASAN and Valgrind to detect subtle memory corruption bugs.
 
 If you need to add support for any external imports, writing stubs is usually
 quick and easy.
@@ -45,7 +45,7 @@ interconnected components that span across kernel and user space. This
 often requires spinning up an entire virtualized Windows environment to fuzz
 them or collect coverage data.
 
-This is less of a problem on Linux, but I've found that porting components of
+This is less of a problem on Linux, and I've found that porting components of
 Windows Antivirus products to Linux is often possible. This allows me to run
 the code I’m testing in minimal containers with very little overhead, and
 easily scale up testing.
@@ -73,13 +73,24 @@ To build the test client, simply type `make`.
 $ make
 ```
 
+### Dependencies
+
+*Note that the `.i686` or `:i386` suffixes are important, we need the 32bit libraries to use the 32bit dll.*
+
+| Fedora / RedHat       | Ubuntu / Debian                     | Comment                      |
+| --------------------- | ----------------------------------- |:---------------------------- |
+| `glibc-devel.i686`    | `libc6-dev:i386` / `libc6-dev-i386` | Name varies with version.    |
+| `libgcc.i686`         | `gcc-multilib`                      |                              |
+| `readline-devel.i686` | `libreadline-dev:i386`              | Optional, used in mpscript.  |
+| `cabextract`          | `cabextract`                        | Used to extract definitions. |
+
 You will need to download the 32-bit antimalware update file from this page:
 
-    * https://www.microsoft.com/security/portal/definitions/adl.aspx#manual
+* https://www.microsoft.com/security/portal/definitions/adl.aspx#manual
 
 This should be a direct link to the right file:
 
-    * http://go.microsoft.com/fwlink/?LinkID=121721&arch=x86
+* https://go.microsoft.com/fwlink/?LinkID=121721&arch=x86
 
 This will download a file called `mpam-fe.exe`, which is a cabinet file that
 can be extracted with `cabextract`. Extract the files into the `engine`
@@ -159,6 +170,8 @@ Program received signal SIGTRAP, Trace/breakpoint trap.
 ```
 
 If you enter the commands it shows into gdb, you will have symbols available.
+
+> *Note that `genmapsym.sh` assumes you're using GNU awk.*
 
 ```
 (gdb) add-symbol-file engine/mpengine.dll 0xf6af4008+0x1000
